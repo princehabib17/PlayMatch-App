@@ -39,7 +39,14 @@ export default function GoldInput({
   });
 
   return (
-    <View style={[{ marginBottom: theme.spacing.md }, style]}>
+    <View
+      style={[
+        {
+          marginBottom: theme.spacing.lg,
+        },
+        style,
+      ]}
+    >
       {label && (
         <Text
           style={[
@@ -65,11 +72,13 @@ export default function GoldInput({
               fontFamily: "Inter_500Medium",
               color: theme.colors.text,
               paddingVertical: theme.spacing.md,
-              paddingHorizontal: 0,
-              backgroundColor: "transparent",
-              borderWidth: 0,
-              borderBottomWidth: 1,
-              borderBottomColor: theme.colors.textMuted,
+              paddingHorizontal: theme.spacing.sm,
+              backgroundColor: theme.colors.card,
+              borderWidth: 1,
+              borderColor: isFocused
+                ? theme.colors.primary
+                : theme.colors.border,
+              borderRadius: theme.radius.md,
               minHeight: multiline ? 80 : "auto",
               textAlignVertical: multiline ? "top" : "center",
             },

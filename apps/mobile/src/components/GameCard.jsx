@@ -50,17 +50,22 @@ export default function GameCard({
         {
           backgroundColor: theme.colors.card,
           borderRadius: theme.radius.md,
-          marginBottom: theme.spacing.md,
+          marginBottom: theme.components.cardMargin,
           overflow: "hidden",
           borderWidth: 1,
-          borderColor: theme.colors.glow,
+          borderColor: theme.colors.border,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.25,
+          shadowRadius: 16,
+          elevation: 6,
         },
         style,
       ]}
     >
       {/* Header Image */}
       {game.venueImage && (
-        <View style={{ position: "relative", height: 120 }}>
+        <View style={{ position: "relative", height: 160 }}>
           <Image
             source={{ uri: game.venueImage }}
             style={{
@@ -76,11 +81,11 @@ export default function GameCard({
             style={{
               position: "absolute",
               bottom: 0,
-              left: 0,
-              right: 0,
-              height: 60,
+              left: theme.components.cardPadding,
+              right: theme.components.cardPadding,
+              height: 72,
               justifyContent: "flex-end",
-              padding: theme.spacing.md,
+              paddingVertical: theme.spacing.md,
             }}
           >
             <Text
@@ -100,7 +105,12 @@ export default function GameCard({
       )}
 
       {/* Content */}
-      <View style={{ padding: theme.spacing.md }}>
+      <View
+        style={{
+          paddingHorizontal: theme.components.cardPadding,
+          paddingVertical: theme.spacing.lg,
+        }}
+      >
         {!game.venueImage && (
           <Text
             style={[

@@ -28,40 +28,40 @@ const theme = {
     tabInactive: "#B5B5B5",
   },
 
-  // Typography
+  // Typography - slightly more athletic and airy
   typography: {
-    h1: { fontSize: 32, lineHeight: 38, letterSpacing: -0.32 },
-    h2: { fontSize: 24, lineHeight: 31, letterSpacing: -0.24 },
-    h3: { fontSize: 20, lineHeight: 28, letterSpacing: -0.2 },
-    body: { fontSize: 16, lineHeight: 24, letterSpacing: 0 },
-    caption: { fontSize: 12, lineHeight: 18, letterSpacing: 0.12 },
+    h1: { fontSize: 34, lineHeight: 40, letterSpacing: -0.4 },
+    h2: { fontSize: 24, lineHeight: 30, letterSpacing: -0.26 },
+    h3: { fontSize: 18, lineHeight: 24, letterSpacing: -0.2 },
+    body: { fontSize: 15, lineHeight: 22, letterSpacing: 0.02 },
+    caption: { fontSize: 12, lineHeight: 16, letterSpacing: 0.16 },
   },
 
-  // Spacing (8pt grid system)
+  // Spacing (8pt grid system, tuned for more breathing room)
   spacing: {
     xs: 4,
     sm: 8,
     md: 16,
     lg: 24,
     xl: 32,
-    xxl: 48,
+    xxl: 56,
   },
 
-  // Border radius
+  // Border radius - softer cards and controls
   radius: {
-    sm: 8,
-    md: 12,
-    lg: 16,
-    xl: 20,
+    sm: 10,
+    md: 14,
+    lg: 20,
+    xl: 28,
     round: 999,
   },
 
   // Component dimensions
   components: {
-    buttonHeight: 48,
-    cardPadding: 12,
-    cardMargin: 8,
-    screenPadding: 16,
+    buttonHeight: 52,
+    cardPadding: 16,
+    cardMargin: 12,
+    screenPadding: 20,
     iconSize: 24,
   },
 };

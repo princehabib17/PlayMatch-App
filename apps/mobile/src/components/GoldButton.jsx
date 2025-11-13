@@ -59,7 +59,14 @@ export default function GoldButton({
   });
 
   return (
-    <Animated.View style={[{ transform: [{ scale: scaleValue }] }, style]}>
+    <Animated.View
+      style={[
+        {
+          transform: [{ scale: scaleValue }],
+        },
+        style,
+      ]}
+    >
       <TouchableOpacity
         style={[
           {
@@ -69,11 +76,11 @@ export default function GoldButton({
               : backgroundColor,
             borderWidth: variant === "outline" ? 2 : 0,
             borderColor: disabled ? theme.colors.textMuted : borderColor,
-            borderRadius: theme.radius.md,
+            borderRadius: theme.radius.round,
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "center",
-            paddingHorizontal: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.xl,
             position: "relative",
             overflow: "hidden",
           },
