@@ -55,9 +55,9 @@ export default function SplashScreen() {
       }),
     ).start();
 
-    // Auto-redirect after 2 seconds
+    // Auto-redirect after 2 seconds to onboarding
     setTimeout(() => {
-      router.replace("/role-selection");
+      router.replace("/onboarding");
     }, 2500);
   }, []);
 

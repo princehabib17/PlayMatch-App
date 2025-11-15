@@ -127,15 +127,15 @@ export default function RoleSelectionScreen() {
               style={{
                 backgroundColor: theme.colors.card,
                 borderRadius: theme.radius.lg,
-                borderWidth: 2,
-                borderColor: theme.colors.primary,
+                borderWidth: 1,
+                borderColor: theme.colors.border,
                 padding: theme.spacing.xl,
                 alignItems: "center",
-                shadowColor: theme.colors.primary,
-                shadowOffset: { width: 0, height: 8 },
-                shadowOpacity: 0.3,
-                shadowRadius: 16,
-                elevation: 8,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.15,
+                shadowRadius: 8,
+                elevation: 3,
               }}
             >
               {/* Icon Container */}
@@ -174,18 +174,63 @@ export default function RoleSelectionScreen() {
 
               <Text
                 style={[
-                  theme.typography.body,
+                  theme.typography.bodySmall,
                   {
                     fontFamily: "Inter_500Medium",
                     color: theme.colors.textSecondary,
                     textAlign: "center",
-                    lineHeight: theme.typography.body.lineHeight,
+                    marginBottom: theme.spacing.md,
                   },
                 ]}
               >
-                Find and join football games in Manila. Connect with players and
-                showcase your skills.
+                Find and join football games in Manila
               </Text>
+
+              {/* Features list */}
+              <View
+                style={{
+                  alignItems: "flex-start",
+                  width: "100%",
+                  gap: theme.spacing.xs,
+                }}
+              >
+                {[
+                  "Browse and join nearby games",
+                  "Upload match highlights",
+                  "Track your stats & progress",
+                  "Connect with other players",
+                ].map((feature, idx) => (
+                  <View
+                    key={idx}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: theme.spacing.sm,
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 4,
+                        height: 4,
+                        borderRadius: 2,
+                        backgroundColor: theme.colors.primary,
+                      }}
+                    />
+                    <Text
+                      style={[
+                        theme.typography.bodySmall,
+                        {
+                          fontFamily: "Inter_500Medium",
+                          color: theme.colors.textSecondary,
+                          fontSize: 13,
+                        },
+                      ]}
+                    >
+                      {feature}
+                    </Text>
+                  </View>
+                ))}
+              </View>
             </TouchableOpacity>
           </Animated.View>
 
@@ -197,15 +242,15 @@ export default function RoleSelectionScreen() {
               style={{
                 backgroundColor: theme.colors.card,
                 borderRadius: theme.radius.lg,
-                borderWidth: 2,
-                borderColor: theme.colors.primary,
+                borderWidth: 1,
+                borderColor: theme.colors.border,
                 padding: theme.spacing.xl,
                 alignItems: "center",
-                shadowColor: theme.colors.primary,
-                shadowOffset: { width: 0, height: 8 },
-                shadowOpacity: 0.3,
-                shadowRadius: 16,
-                elevation: 8,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.15,
+                shadowRadius: 8,
+                elevation: 3,
               }}
             >
               {/* Icon Container */}
@@ -244,18 +289,63 @@ export default function RoleSelectionScreen() {
 
               <Text
                 style={[
-                  theme.typography.body,
+                  theme.typography.bodySmall,
                   {
                     fontFamily: "Inter_500Medium",
                     color: theme.colors.textSecondary,
                     textAlign: "center",
-                    lineHeight: theme.typography.body.lineHeight,
+                    marginBottom: theme.spacing.md,
                   },
                 ]}
               >
-                Create and manage football games. Build your community and earn
-                revenue.
+                Create and manage football games
               </Text>
+
+              {/* Features list */}
+              <View
+                style={{
+                  alignItems: "flex-start",
+                  width: "100%",
+                  gap: theme.spacing.xs,
+                }}
+              >
+                {[
+                  "Host and schedule matches",
+                  "Manage player registrations",
+                  "Build your community",
+                  "Earn revenue from games",
+                ].map((feature, idx) => (
+                  <View
+                    key={idx}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: theme.spacing.sm,
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 4,
+                        height: 4,
+                        borderRadius: 2,
+                        backgroundColor: theme.colors.primary,
+                      }}
+                    />
+                    <Text
+                      style={[
+                        theme.typography.bodySmall,
+                        {
+                          fontFamily: "Inter_500Medium",
+                          color: theme.colors.textSecondary,
+                          fontSize: 13,
+                        },
+                      ]}
+                    >
+                      {feature}
+                    </Text>
+                  </View>
+                ))}
+              </View>
             </TouchableOpacity>
           </Animated.View>
         </View>

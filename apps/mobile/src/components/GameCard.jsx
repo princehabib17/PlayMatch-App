@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { MapPin, Clock, Users, Trophy } from "lucide-react-native";
 import { useTheme } from "@/utils/theme";
 
 export default function GameCard({
@@ -55,10 +54,10 @@ export default function GameCard({
           borderWidth: 1,
           borderColor: theme.colors.border,
           shadowColor: "#000",
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.25,
-          shadowRadius: 16,
-          elevation: 6,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 2,
         },
         style,
       ]}
@@ -127,105 +126,88 @@ export default function GameCard({
           </Text>
         )}
 
+        {/* Date & Time - NO ICON */}
+        <View style={{ marginBottom: theme.spacing.sm }}>
+          <Text
+            style={[
+              theme.typography.bodySmall,
+              {
+                fontFamily: "Inter_500Medium",
+                color: theme.colors.textSecondary,
+              },
+            ]}
+          >
+            {formatDate(game.dateTime)} • {formatTime(game.dateTime)}
+          </Text>
+        </View>
+
         {/* Game Info Row */}
         <View
           style={{
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: theme.spacing.md,
+            marginBottom: theme.spacing.sm,
           }}
         >
-          {/* Date & Time */}
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Clock
-              size={16}
-              color={theme.colors.textSecondary}
-              strokeWidth={2}
-            />
-            <Text
-              style={[
-                theme.typography.caption,
-                {
-                  fontFamily: "Inter_500Medium",
-                  color: theme.colors.textSecondary,
-                  marginLeft: theme.spacing.xs,
-                  letterSpacing: theme.typography.caption.letterSpacing,
-                },
-              ]}
-            >
-              {formatDate(game.dateTime)} • {formatTime(game.dateTime)}
-            </Text>
-          </View>
+          {/* Players Count - NO ICON, cleaner text */}
+          <Text
+            style={[
+              theme.typography.body,
+              {
+                fontFamily: "Inter_600SemiBold",
+                color: theme.colors.text,
+              },
+            ]}
+          >
+            {game.playersJoined}/{game.maxPlayers} players
+          </Text>
 
-          {/* Level Badge */}
+          {/* Level Badge - smaller, subtler */}
           <View
             style={{
-              backgroundColor: getLevelColor(game.level),
+              backgroundColor: `${getLevelColor(game.level)}15`,
+              borderWidth: 1,
+              borderColor: getLevelColor(game.level),
               paddingHorizontal: theme.spacing.sm,
-              paddingVertical: theme.spacing.xs,
-              borderRadius: theme.radius.sm,
+              paddingVertical: 4,
+              borderRadius: theme.radius.xs,
             }}
           >
             <Text
               style={[
                 theme.typography.caption,
                 {
-                  fontFamily: "Inter_700Bold",
-                  color: theme.colors.background,
-                  letterSpacing: theme.typography.caption.letterSpacing,
+                  fontFamily: "Inter_600SemiBold",
+                  color: getLevelColor(game.level),
+                  fontSize: 11,
                 },
               ]}
             >
-              {game.level}
+              {game.level.toUpperCase()}
             </Text>
           </View>
         </View>
 
-        {/* Bottom Row */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
+        {/* Fee - more prominent */}
+        <Text
+          style={[
+            theme.typography.h3,
+            {
+              fontFamily: "Figtree_700Bold",
+              color: theme.colors.primary,
+              marginBottom: theme.spacing.sm,
+            },
+          ]}
         >
-          {/* Players Count */}
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Users size={16} color={theme.colors.primary} strokeWidth={2} />
-            <Text
-              style={[
-                theme.typography.body,
-                {
-                  fontFamily: "Inter_500Medium",
-                  color: theme.colors.text,
-                  marginLeft: theme.spacing.xs,
-                },
-              ]}
-            >
-              {game.playersJoined}/{game.maxPlayers}
-            </Text>
-          </View>
+          ₱{game.fee}
+        </Text>
 
-          {/* Fee */}
-          <Text
-            style={[
-              theme.typography.body,
-              {
-                fontFamily: "Figtree_700Bold",
-                color: theme.colors.primary,
-              },
-            ]}
-          >
-            ₱{game.fee}
-          </Text>
-        </View>
-
-        {/* Progress Bar */}
+        {/* Progress Bar - thinner, subtler */}
         <View
           style={{
-            marginTop: theme.spacing.md,
-            height: 4,
+            marginTop: theme.spacing.xs,
+            height: 3,
             backgroundColor: theme.colors.elevated,
             borderRadius: 2,
             overflow: "hidden",
@@ -235,7 +217,10 @@ export default function GameCard({
             style={{
               height: "100%",
               width: `${(game.playersJoined / game.maxPlayers) * 100}%`,
-              backgroundColor: theme.colors.primary,
+              backgroundColor:
+                game.playersJoined / game.maxPlayers > 0.8
+                  ? theme.colors.success
+                  : theme.colors.textMuted,
               borderRadius: 2,
             }}
           />

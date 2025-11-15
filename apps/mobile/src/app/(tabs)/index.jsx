@@ -21,6 +21,60 @@ import GameCard from "@/components/GameCard";
 const { width: screenWidth } = Dimensions.get("window");
 const cardWidth = screenWidth * 0.85;
 
+// Sample games data - always show something
+const sampleGames = [
+  {
+    id: "sample-1",
+    venue: "Ultra Sports Complex",
+    venueImage: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800",
+    dateTime: new Date(Date.now() + 86400000 * 1).toISOString(), // Tomorrow
+    level: "Intermediate",
+    playersJoined: 8,
+    maxPlayers: 14,
+    fee: 350,
+  },
+  {
+    id: "sample-2",
+    venue: "Makati Football Pitch",
+    venueImage: "https://images.unsplash.com/photo-1553778263-73a83bab9b0c?w=800",
+    dateTime: new Date(Date.now() + 86400000 * 2).toISOString(), // 2 days
+    level: "Advanced",
+    playersJoined: 12,
+    maxPlayers: 14,
+    fee: 450,
+  },
+  {
+    id: "sample-3",
+    venue: "BGC Green Field",
+    venueImage: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=800",
+    dateTime: new Date(Date.now() + 86400000 * 3).toISOString(), // 3 days
+    level: "Beginner",
+    playersJoined: 5,
+    maxPlayers: 12,
+    fee: 250,
+  },
+  {
+    id: "sample-4",
+    venue: "Quezon City Dome",
+    venueImage: "https://images.unsplash.com/photo-1577223625816-7546f13df25d?w=800",
+    dateTime: new Date(Date.now() + 86400000 * 1).toISOString(), // Tomorrow evening
+    level: "Intermediate",
+    playersJoined: 10,
+    maxPlayers: 16,
+    fee: 300,
+  },
+  {
+    id: "sample-5",
+    venue: "Alabang Soccer Field",
+    venueImage: "https://images.unsplash.com/photo-1551958219-acbc608c6377?w=800",
+    dateTime: new Date(Date.now() + 86400000 * 4).toISOString(), // 4 days
+    level: "Advanced",
+    playersJoined: 13,
+    maxPlayers: 14,
+    fee: 500,
+  },
+];
+
 // Mock data for featured content (tournaments, highlights, etc.)
 const featuredData = [
   {
@@ -224,11 +278,11 @@ function FeaturedCard({ item, index, scrollX }) {
           overflow: "hidden",
           borderWidth: 1,
           borderColor: theme.colors.border,
-          shadowColor: theme.colors.primary,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.1,
-          shadowRadius: 8,
-          elevation: 4,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.15,
+          shadowRadius: 6,
+          elevation: 3,
         }}
       >
         <View style={{ position: "relative", height: 160 }}>
@@ -316,7 +370,8 @@ export default function HomeScreen() {
     ...featuredData,
   ];
 
-  const nearbyGames = gamesData?.games || [];
+  // Use sample games if no real data available
+  const nearbyGames = gamesData?.games?.length > 0 ? gamesData.games : sampleGames;
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -340,14 +395,18 @@ export default function HomeScreen() {
         {/* Header */}
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
             paddingHorizontal: theme.spacing.md,
             marginBottom: theme.spacing.xl,
           }}
         >
-          <View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: theme.spacing.sm,
+            }}
+          >
             <Text
               style={[
                 theme.typography.h1,
@@ -360,33 +419,51 @@ export default function HomeScreen() {
             >
               PlayMatch
             </Text>
+
+            <TouchableOpacity
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 22,
+                backgroundColor: theme.colors.card,
+                alignItems: "center",
+                justifyContent: "center",
+                borderWidth: 1,
+                borderColor: theme.colors.border,
+              }}
+            >
+              <Bell size={22} color={theme.colors.text} strokeWidth={2} />
+            </TouchableOpacity>
+          </View>
+
+          {/* Social proof subtitle */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: theme.spacing.xs,
+            }}
+          >
+            <View
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: 3,
+                backgroundColor: theme.colors.success,
+              }}
+            />
             <Text
               style={[
-                theme.typography.body,
+                theme.typography.bodySmall,
                 {
                   fontFamily: "Inter_500Medium",
                   color: theme.colors.textSecondary,
                 },
               ]}
             >
-              Find your next game
+              127 players joined games this week
             </Text>
           </View>
-
-          <TouchableOpacity
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 22,
-              backgroundColor: theme.colors.card,
-              alignItems: "center",
-              justifyContent: "center",
-              borderWidth: 1,
-              borderColor: theme.colors.border,
-            }}
-          >
-            <Bell size={22} color={theme.colors.text} strokeWidth={2} />
-          </TouchableOpacity>
         </View>
 
         {/* Featured Carousel */}
@@ -434,58 +511,73 @@ export default function HomeScreen() {
 
         {/* Nearby Games */}
         <View style={{ paddingHorizontal: theme.spacing.md }}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: theme.spacing.lg,
-            }}
-          >
-            <Text
-              style={[
-                theme.typography.h2,
-                {
-                  fontFamily: "Figtree_700Bold",
-                  color: theme.colors.text,
-                  letterSpacing: theme.typography.h2.letterSpacing,
-                },
-              ]}
-            >
-              Nearby Games
-            </Text>
-
-            <TouchableOpacity
-              onPress={() => router.push("/(tabs)/search")}
+          <View style={{ marginBottom: theme.spacing.lg }}>
+            <View
               style={{
                 flexDirection: "row",
+                justifyContent: "space-between",
                 alignItems: "center",
-                paddingHorizontal: theme.spacing.sm,
-                paddingVertical: theme.spacing.xs,
-                borderRadius: theme.radius.sm,
-                borderWidth: 1,
-                borderColor: theme.colors.border,
+                marginBottom: theme.spacing.xs,
               }}
             >
-              <Filter
-                size={16}
-                color={theme.colors.textSecondary}
-                strokeWidth={2}
-              />
               <Text
                 style={[
-                  theme.typography.caption,
+                  theme.typography.h2,
                   {
-                    fontFamily: "Inter_500Medium",
-                    color: theme.colors.textSecondary,
-                    marginLeft: theme.spacing.xs,
-                    letterSpacing: theme.typography.caption.letterSpacing,
+                    fontFamily: "Figtree_700Bold",
+                    color: theme.colors.text,
+                    letterSpacing: theme.typography.h2.letterSpacing,
                   },
                 ]}
               >
-                Filter
+                Games Near You
               </Text>
-            </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => router.push("/(tabs)/search")}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingHorizontal: theme.spacing.sm,
+                  paddingVertical: theme.spacing.xs,
+                  borderRadius: theme.radius.sm,
+                  borderWidth: 1,
+                  borderColor: theme.colors.border,
+                }}
+              >
+                <Filter
+                  size={16}
+                  color={theme.colors.textSecondary}
+                  strokeWidth={2}
+                />
+                <Text
+                  style={[
+                    theme.typography.caption,
+                    {
+                      fontFamily: "Inter_500Medium",
+                      color: theme.colors.textSecondary,
+                      marginLeft: theme.spacing.xs,
+                      letterSpacing: theme.typography.caption.letterSpacing,
+                    },
+                  ]}
+                >
+                  Filter
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Section description */}
+            <Text
+              style={[
+                theme.typography.bodySmall,
+                {
+                  fontFamily: "Inter_500Medium",
+                  color: theme.colors.textMuted,
+                },
+              ]}
+            >
+              Popular matches in Metro Manila
+            </Text>
           </View>
 
           {/* Loading state */}
