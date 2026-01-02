@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { apiFetch } from "@/utils/api";
 import {
   View,
   Text,
@@ -38,7 +39,7 @@ export default function SearchScreen() {
       if (filters.maxFee) params.append("maxFee", filters.maxFee);
       params.append("limit", "20");
 
-      const response = await fetch(`/api/games?${params.toString()}`);
+      const response = await apiFetch(`/api/games?${params.toString()}`);
       if (!response.ok) {
         throw new Error("Failed to search games");
       }

@@ -25,6 +25,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "@/utils/theme";
 import GoldButton from "@/components/GoldButton";
+import { apiFetch } from "@/utils/api";
 
 export default function MatchDetailsScreen() {
   const theme = useTheme();
@@ -44,7 +45,7 @@ export default function MatchDetailsScreen() {
   } = useQuery({
     queryKey: ["game", id],
     queryFn: async () => {
-      const response = await fetch(`/api/games/${id}`);
+      const response = await apiFetch(`/api/games/${id}`);
       if (!response.ok) {
         throw new Error("Failed to fetch game details");
       }
@@ -56,9 +57,8 @@ export default function MatchDetailsScreen() {
   // Join game mutation
   const joinGameMutation = useMutation({
     mutationFn: async ({ team }) => {
-      const response = await fetch(`/api/games/${id}/join`, {
+      const response = await apiFetch(`/api/games/${id}/join`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId: currentUserId,
           team: team,

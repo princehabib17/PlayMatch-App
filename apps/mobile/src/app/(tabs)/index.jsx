@@ -18,6 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/utils/theme";
 import GameCard from "@/components/GameCard";
 
+import { apiFetch } from "@/utils/api";
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const cardWidth = screenWidth * 0.88;
 
@@ -386,7 +387,7 @@ export default function HomeScreen() {
   } = useQuery({
     queryKey: ["games", "nearby"],
     queryFn: async () => {
-      const response = await fetch("/api/games?limit=10&status=open");
+      const response = await apiFetch("/api/games?limit=10&status=open");
       if (!response.ok) {
         throw new Error("Failed to fetch games");
       }
