@@ -4,12 +4,18 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useFonts, Figtree_700Bold } from "@expo-google-fonts/figtree";
 import {
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold,
-} from "@expo-google-fonts/inter";
+  Oswald_400Regular,
+  Oswald_500Medium,
+  Oswald_600SemiBold,
+  Oswald_700Bold,
+} from "@expo-google-fonts/oswald";
+import {
+  Barlow_400Regular,
+  Barlow_500Medium,
+  Barlow_600SemiBold,
+  Barlow_700Bold,
+} from "@expo-google-fonts/barlow";
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient({
@@ -26,10 +32,14 @@ const queryClient = new QueryClient({
 export default function RootLayout() {
   const { initiate, isReady } = useAuth();
   const [fontsLoaded] = useFonts({
-    Figtree_700Bold,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
+    Oswald_400Regular,
+    Oswald_500Medium,
+    Oswald_600SemiBold,
+    Oswald_700Bold,
+    Barlow_400Regular,
+    Barlow_500Medium,
+    Barlow_600SemiBold,
+    Barlow_700Bold,
   });
 
   useEffect(() => {
