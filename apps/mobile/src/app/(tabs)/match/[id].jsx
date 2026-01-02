@@ -327,27 +327,35 @@ export default function MatchDetailsScreen() {
             style={[
               theme.typography.h1,
               {
-                fontFamily: "Figtree_700Bold",
+                fontFamily: "Oswald_700Bold",
                 color: theme.colors.text,
-                marginBottom: 8,
-                letterSpacing: theme.typography.h1.letterSpacing,
+                marginBottom: 12,
+                textShadowColor: theme.colors.glowPrimary,
+                textShadowOffset: { width: 0, height: 0 },
+                textShadowRadius: 20,
               },
             ]}
           >
-            {game.title || game.venue.name}
+            {(game.title || game.venue.name)?.toUpperCase()}
           </Text>
 
           <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{
+              width: 3,
+              height: 16,
+              backgroundColor: theme.colors.primary,
+              marginRight: theme.spacing.sm,
+            }} />
             <MapPin
               size={16}
-              color={theme.colors.textSecondary}
-              strokeWidth={2}
+              color: theme.colors.textSecondary}
+              strokeWidth={2.5}
             />
             <Text
               style={[
                 theme.typography.body,
                 {
-                  fontFamily: "Inter_500Medium",
+                  fontFamily: "Barlow_500Medium",
                   color: theme.colors.textSecondary,
                   marginLeft: 8,
                 },

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,14 +12,14 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
-import { Bell, Filter, MapPin, Clock, Users, Star } from "lucide-react-native";
+import { Bell, Filter, MapPin, Clock, Users, Star, Zap, TrendingUp } from "lucide-react-native";
 import { router } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/utils/theme";
 import GameCard from "@/components/GameCard";
 
-const { width: screenWidth } = Dimensions.get("window");
-const cardWidth = screenWidth * 0.85;
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+const cardWidth = screenWidth * 0.88;
 
 // Mock data for featured content (tournaments, highlights, etc.)
 const featuredData = [
@@ -48,62 +48,123 @@ const featuredData = [
   },
 ];
 
+// Diagonal slash accent component
+function DiagonalSlash({ color, width = 4, style }) {
+  return (
+    <View
+      style={[
+        {
+          position: "absolute",
+          width: width,
+          height: "120%",
+          backgroundColor: color,
+          transform: [{ rotate: "-12deg" }, { translateY: -10 }],
+        },
+        style,
+      ]}
+    />
+  );
+}
+
 function FeaturedCard({ item, index, scrollX }) {
   const theme = useTheme();
+  const glowAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowAnim, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: false,
+        }),
+        Animated.timing(glowAnim, {
+          toValue: 0,
+          duration: 2000,
+          useNativeDriver: false,
+        }),
+      ])
+    ).start();
+  }, []);
 
   const inputRange = [
-    (index - 1) * cardWidth,
-    index * cardWidth,
-    (index + 1) * cardWidth,
+    (index - 1) * (cardWidth + theme.spacing.md),
+    index * (cardWidth + theme.spacing.md),
+    (index + 1) * (cardWidth + theme.spacing.md),
   ];
 
   const scale = scrollX.interpolate({
     inputRange,
-    outputRange: [0.9, 1, 0.9],
+    outputRange: [0.92, 1, 0.92],
     extrapolate: "clamp",
   });
 
   const opacity = scrollX.interpolate({
     inputRange,
-    outputRange: [0.7, 1, 0.7],
+    outputRange: [0.6, 1, 0.6],
     extrapolate: "clamp",
+  });
+
+  const glowOpacity = glowAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.3, 0.7],
   });
 
   const renderCardContent = () => {
     switch (item.type) {
       case "featured_game":
         return (
-          <View style={{ padding: theme.spacing.md }}>
+          <View style={{ padding: theme.spacing.lg }}>
+            {/* Diagonal accent */}
+            <DiagonalSlash color={theme.colors.primary} width={3} style={{ left: -20, opacity: 0.6 }} />
+            <DiagonalSlash color={theme.colors.secondary} width={2} style={{ left: 10, opacity: 0.4 }} />
+
+            <View style={{ flexDirection: "row", alignItems: "center", marginBottom: theme.spacing.xs }}>
+              <Zap size={18} color={theme.colors.primary} fill={theme.colors.primary} strokeWidth={0} />
+              <Text
+                style={[
+                  theme.typography.caption,
+                  {
+                    fontFamily: "Oswald_600SemiBold",
+                    color: theme.colors.primary,
+                    marginLeft: theme.spacing.xs,
+                  },
+                ]}
+              >
+                FEATURED
+              </Text>
+            </View>
+
             <Text
               style={[
                 theme.typography.h3,
                 {
-                  fontFamily: "Figtree_700Bold",
+                  fontFamily: "Oswald_700Bold",
                   color: theme.colors.text,
                   marginBottom: theme.spacing.sm,
-                  letterSpacing: theme.typography.h3.letterSpacing,
                 },
               ]}
             >
-              {item.title}
+              {item.title?.toUpperCase()}
             </Text>
+
             <View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                marginBottom: theme.spacing.xs,
+                marginBottom: theme.spacing.sm,
               }}
             >
               <MapPin
                 size={14}
                 color={theme.colors.textSecondary}
-                strokeWidth={2}
+                strokeWidth={2.5}
               />
               <Text
                 style={[
-                  theme.typography.caption,
+                  theme.typography.bodySmall,
                   {
-                    fontFamily: "Inter_500Medium",
+                    fontFamily: "Barlow_500Medium",
                     color: theme.colors.textSecondary,
                     marginLeft: theme.spacing.xs,
                   },
@@ -112,85 +173,128 @@ function FeaturedCard({ item, index, scrollX }) {
                 {item.venue}
               </Text>
             </View>
-            <Text
-              style={[
-                theme.typography.body,
-                {
-                  fontFamily: "Inter_700Bold",
-                  color: theme.colors.primary,
-                },
-              ]}
-            >
-              ₱{item.fee} • {item.level}
-            </Text>
+
+            <View style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: theme.spacing.md,
+            }}>
+              <Text
+                style={[
+                  theme.typography.h4,
+                  {
+                    fontFamily: "Oswald_700Bold",
+                    color: theme.colors.primary,
+                  },
+                ]}
+              >
+                ₱{item.fee}
+              </Text>
+              <View style={{
+                backgroundColor: theme.colors.glowPrimary,
+                paddingHorizontal: theme.spacing.sm,
+                paddingVertical: 4,
+                borderRadius: theme.radius.sm,
+              }}>
+                <Text
+                  style={[
+                    theme.typography.captionSmall,
+                    {
+                      fontFamily: "Oswald_600SemiBold",
+                      color: theme.colors.text,
+                    },
+                  ]}
+                >
+                  {item.level?.toUpperCase()}
+                </Text>
+              </View>
+            </View>
           </View>
         );
 
       case "tournament":
         return (
-          <View style={{ padding: theme.spacing.md }}>
+          <View style={{ padding: theme.spacing.lg }}>
+            <DiagonalSlash color={theme.colors.warning} width={3} style={{ right: -20, opacity: 0.5 }} />
+
+            <View style={{ flexDirection: "row", alignItems: "center", marginBottom: theme.spacing.xs }}>
+              <TrendingUp size={18} color={theme.colors.warning} strokeWidth={2.5} />
+              <Text
+                style={[
+                  theme.typography.caption,
+                  {
+                    fontFamily: "Oswald_600SemiBold",
+                    color: theme.colors.warning,
+                    marginLeft: theme.spacing.xs,
+                  },
+                ]}
+              >
+                TOURNAMENT
+              </Text>
+            </View>
+
             <Text
               style={[
                 theme.typography.h3,
                 {
-                  fontFamily: "Figtree_700Bold",
+                  fontFamily: "Oswald_700Bold",
                   color: theme.colors.text,
                   marginBottom: theme.spacing.sm,
-                  letterSpacing: theme.typography.h3.letterSpacing,
                 },
               ]}
             >
-              {item.title}
+              {item.title?.toUpperCase()}
             </Text>
+
             <Text
               style={[
-                theme.typography.body,
+                theme.typography.bodySmall,
                 {
-                  fontFamily: "Inter_500Medium",
+                  fontFamily: "Barlow_400Regular",
                   color: theme.colors.textSecondary,
-                  marginBottom: theme.spacing.sm,
+                  marginBottom: theme.spacing.md,
                 },
               ]}
             >
               {item.description}
             </Text>
+
             <Text
               style={[
-                theme.typography.body,
+                theme.typography.h4,
                 {
-                  fontFamily: "Inter_700Bold",
-                  color: theme.colors.primary,
+                  fontFamily: "Oswald_700Bold",
+                  color: theme.colors.warning,
                 },
               ]}
             >
-              Prize Pool: {item.prize}
+              PRIZE: {item.prize}
             </Text>
           </View>
         );
 
       default:
         return (
-          <View style={{ padding: theme.spacing.md }}>
+          <View style={{ padding: theme.spacing.lg }}>
             <Text
               style={[
                 theme.typography.h3,
                 {
-                  fontFamily: "Figtree_700Bold",
+                  fontFamily: "Oswald_700Bold",
                   color: theme.colors.text,
-                  letterSpacing: theme.typography.h3.letterSpacing,
                 },
               ]}
             >
-              {item.title}
+              {item.title?.toUpperCase()}
             </Text>
             {item.description && (
               <Text
                 style={[
                   theme.typography.body,
                   {
-                    fontFamily: "Inter_500Medium",
+                    fontFamily: "Barlow_400Regular",
                     color: theme.colors.textSecondary,
-                    marginTop: theme.spacing.xs,
+                    marginTop: theme.spacing.sm,
                   },
                 ]}
               >
@@ -217,29 +321,40 @@ function FeaturedCard({ item, index, scrollX }) {
             router.push(`/match/${item.id}`);
           }
         }}
-        activeOpacity={0.9}
+        activeOpacity={0.85}
         style={{
           backgroundColor: theme.colors.card,
-          borderRadius: theme.radius.md,
+          borderRadius: theme.radius.lg,
           overflow: "hidden",
-          borderWidth: 1,
+          borderWidth: 2,
           borderColor: theme.colors.border,
-          shadowColor: theme.colors.primary,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.1,
-          shadowRadius: 8,
-          elevation: 4,
+          ...theme.shadows.glow,
         }}
       >
-        <View style={{ position: "relative", height: 160 }}>
+        <View style={{ position: "relative", height: 220 }}>
           <Image
             source={{ uri: item.image }}
             style={{ width: "100%", height: "100%", resizeMode: "cover" }}
           />
 
-          {/* Gradient overlay */}
+          {/* Animated glow overlay */}
+          <Animated.View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: theme.colors.primary,
+              opacity: glowOpacity,
+              mixBlendMode: "overlay",
+            }}
+          />
+
+          {/* Dark gradient overlay */}
           <LinearGradient
-            colors={["transparent", "rgba(0,0,0,0.8)"]}
+            colors={["transparent", theme.colors.gradientMid, theme.colors.gradientDark]}
+            locations={[0, 0.4, 1]}
             style={{
               position: "absolute",
               bottom: 0,
@@ -337,74 +452,132 @@ export default function HomeScreen() {
           />
         }
       >
-        {/* Header */}
+        {/* Header - BOLD ATHLETIC */}
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
             paddingHorizontal: theme.spacing.md,
             marginBottom: theme.spacing.xl,
+            position: "relative",
           }}
         >
-          <View>
-            <Text
-              style={[
-                theme.typography.h1,
-                {
-                  fontFamily: "Figtree_700Bold",
-                  color: theme.colors.text,
-                  letterSpacing: theme.typography.h1.letterSpacing,
-                },
-              ]}
-            >
-              PlayMatch
-            </Text>
-            <Text
-              style={[
-                theme.typography.body,
-                {
-                  fontFamily: "Inter_500Medium",
-                  color: theme.colors.textSecondary,
-                },
-              ]}
-            >
-              Find your next game
-            </Text>
+          {/* Background diagonal slashes */}
+          <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: 100, overflow: "hidden" }}>
+            <DiagonalSlash color={theme.colors.glowPrimary} width={80} style={{ left: -40, opacity: 0.08 }} />
+            <DiagonalSlash color={theme.colors.glowSecondary} width={60} style={{ right: 40, opacity: 0.06 }} />
           </View>
 
-          <TouchableOpacity
+          <View
             style={{
-              width: 44,
-              height: 44,
-              borderRadius: 22,
-              backgroundColor: theme.colors.card,
-              alignItems: "center",
-              justifyContent: "center",
-              borderWidth: 1,
-              borderColor: theme.colors.border,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
             }}
           >
-            <Bell size={22} color={theme.colors.text} strokeWidth={2} />
-          </TouchableOpacity>
+            <View style={{ flex: 1 }}>
+              <Text
+                style={[
+                  theme.typography.display,
+                  {
+                    fontFamily: "Oswald_700Bold",
+                    color: theme.colors.text,
+                    textShadowColor: theme.colors.glowPrimary,
+                    textShadowOffset: { width: 0, height: 0 },
+                    textShadowRadius: 20,
+                  },
+                ]}
+              >
+                PLAYMATCH
+              </Text>
+              <View style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: theme.spacing.xs,
+              }}>
+                <View style={{
+                  width: 3,
+                  height: 16,
+                  backgroundColor: theme.colors.primary,
+                  marginRight: theme.spacing.sm,
+                }} />
+                <Text
+                  style={[
+                    theme.typography.body,
+                    {
+                      fontFamily: "Barlow_500Medium",
+                      color: theme.colors.textSecondary,
+                      letterSpacing: 0.5,
+                    },
+                  ]}
+                >
+                  Your Next Game Awaits
+                </Text>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={{
+                width: 52,
+                height: 52,
+                borderRadius: theme.radius.md,
+                backgroundColor: theme.colors.cardElevated,
+                alignItems: "center",
+                justifyContent: "center",
+                borderWidth: 2,
+                borderColor: theme.colors.border,
+                ...theme.shadows.glow,
+              }}
+            >
+              <Bell size={24} color={theme.colors.primary} strokeWidth={2.5} />
+              {/* Notification dot */}
+              <View
+                style={{
+                  position: "absolute",
+                  top: 8,
+                  right: 8,
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: theme.colors.error,
+                }}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Featured Carousel */}
         <View style={{ marginBottom: theme.spacing.xl }}>
-          <Text
-            style={[
-              theme.typography.h2,
-              {
-                fontFamily: "Figtree_700Bold",
-                color: theme.colors.text,
-                marginBottom: theme.spacing.lg,
-                paddingHorizontal: theme.spacing.md,
-                letterSpacing: theme.typography.h2.letterSpacing,
-              },
-            ]}
-          >
-            Featured
-          </Text>
+          <View style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginBottom: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
+          }}>
+            <View style={{
+              width: 4,
+              height: 24,
+              backgroundColor: theme.colors.primary,
+              marginRight: theme.spacing.sm,
+              transform: [{ skewX: '-12deg' }],
+            }} />
+            <Text
+              style={[
+                theme.typography.h2,
+                {
+                  fontFamily: "Oswald_700Bold",
+                  color: theme.colors.text,
+                },
+              ]}
+            >
+              FEATURED
+            </Text>
+            <Zap
+              size={20}
+              color={theme.colors.primary}
+              fill={theme.colors.primary}
+              strokeWidth={0}
+              style={{ marginLeft: theme.spacing.sm }}
+            />
+          </View>
 
           <Animated.ScrollView
             horizontal
@@ -442,48 +615,56 @@ export default function HomeScreen() {
               marginBottom: theme.spacing.lg,
             }}
           >
-            <Text
-              style={[
-                theme.typography.h2,
-                {
-                  fontFamily: "Figtree_700Bold",
-                  color: theme.colors.text,
-                  letterSpacing: theme.typography.h2.letterSpacing,
-                },
-              ]}
-            >
-              Nearby Games
-            </Text>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View style={{
+                width: 4,
+                height: 24,
+                backgroundColor: theme.colors.secondary,
+                marginRight: theme.spacing.sm,
+                transform: [{ skewX: '-12deg' }],
+              }} />
+              <Text
+                style={[
+                  theme.typography.h2,
+                  {
+                    fontFamily: "Oswald_700Bold",
+                    color: theme.colors.text,
+                  },
+                ]}
+              >
+                NEARBY GAMES
+              </Text>
+            </View>
 
             <TouchableOpacity
               onPress={() => router.push("/(tabs)/search")}
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                paddingHorizontal: theme.spacing.sm,
-                paddingVertical: theme.spacing.xs,
+                paddingHorizontal: theme.spacing.md,
+                paddingVertical: theme.spacing.sm,
                 borderRadius: theme.radius.sm,
-                borderWidth: 1,
+                backgroundColor: theme.colors.cardElevated,
+                borderWidth: 1.5,
                 borderColor: theme.colors.border,
               }}
             >
               <Filter
                 size={16}
-                color={theme.colors.textSecondary}
-                strokeWidth={2}
+                color={theme.colors.primary}
+                strokeWidth={2.5}
               />
               <Text
                 style={[
                   theme.typography.caption,
                   {
-                    fontFamily: "Inter_500Medium",
-                    color: theme.colors.textSecondary,
+                    fontFamily: "Oswald_600SemiBold",
+                    color: theme.colors.primary,
                     marginLeft: theme.spacing.xs,
-                    letterSpacing: theme.typography.caption.letterSpacing,
                   },
                 ]}
               >
-                Filter
+                FILTER
               </Text>
             </TouchableOpacity>
           </View>
@@ -493,19 +674,19 @@ export default function HomeScreen() {
             <View
               style={{
                 alignItems: "center",
-                paddingVertical: theme.spacing.xl,
+                paddingVertical: theme.spacing.xxxl,
               }}
             >
               <Text
                 style={[
-                  theme.typography.body,
+                  theme.typography.h3,
                   {
-                    fontFamily: "Inter_500Medium",
-                    color: theme.colors.textSecondary,
+                    fontFamily: "Oswald_600SemiBold",
+                    color: theme.colors.primary,
                   },
                 ]}
               >
-                Loading games...
+                LOADING GAMES...
               </Text>
             </View>
           )}
@@ -515,20 +696,34 @@ export default function HomeScreen() {
             <View
               style={{
                 alignItems: "center",
-                paddingVertical: theme.spacing.xl,
+                paddingVertical: theme.spacing.xxxl,
+                paddingHorizontal: theme.spacing.xl,
               }}
             >
               <Text
                 style={[
+                  theme.typography.h3,
+                  {
+                    fontFamily: "Oswald_600SemiBold",
+                    color: theme.colors.error,
+                    textAlign: "center",
+                    marginBottom: theme.spacing.sm,
+                  },
+                ]}
+              >
+                LOAD FAILED
+              </Text>
+              <Text
+                style={[
                   theme.typography.body,
                   {
-                    fontFamily: "Inter_500Medium",
-                    color: theme.colors.error,
+                    fontFamily: "Barlow_400Regular",
+                    color: theme.colors.textSecondary,
                     textAlign: "center",
                   },
                 ]}
               >
-                Failed to load games. Pull down to refresh.
+                Pull down to refresh
               </Text>
             </View>
           )}
@@ -543,20 +738,34 @@ export default function HomeScreen() {
             <View
               style={{
                 alignItems: "center",
-                paddingVertical: theme.spacing.xl,
+                paddingVertical: theme.spacing.xxxl,
+                paddingHorizontal: theme.spacing.xl,
               }}
             >
               <Text
                 style={[
+                  theme.typography.h3,
+                  {
+                    fontFamily: "Oswald_600SemiBold",
+                    color: theme.colors.textMuted,
+                    textAlign: "center",
+                    marginBottom: theme.spacing.sm,
+                  },
+                ]}
+              >
+                NO GAMES NEARBY
+              </Text>
+              <Text
+                style={[
                   theme.typography.body,
                   {
-                    fontFamily: "Inter_500Medium",
+                    fontFamily: "Barlow_400Regular",
                     color: theme.colors.textSecondary,
                     textAlign: "center",
                   },
                 ]}
               >
-                No games nearby. Check back later or create your own!
+                Check back later or create your own!
               </Text>
             </View>
           )}
