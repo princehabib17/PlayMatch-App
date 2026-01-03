@@ -219,9 +219,9 @@ app.all('/integrations/:path{.+}', async (c, next) => {
     redirect: 'manual',
     headers: {
       ...c.req.header(),
-      'X-Forwarded-For': process.env.NEXT_PUBLIC_CREATE_HOST,
-      'x-createxyz-host': process.env.NEXT_PUBLIC_CREATE_HOST,
-      Host: process.env.NEXT_PUBLIC_CREATE_HOST,
+      'X-Forwarded-For': process.env.NEXT_PUBLIC_CREATE_HOST ?? 'www.create.xyz',
+      'x-createxyz-host': process.env.NEXT_PUBLIC_CREATE_HOST ?? 'www.create.xyz',
+      Host: process.env.NEXT_PUBLIC_CREATE_HOST ?? 'www.create.xyz',
       'x-createxyz-project-group-id': process.env.NEXT_PUBLIC_PROJECT_GROUP_ID,
     },
   });
