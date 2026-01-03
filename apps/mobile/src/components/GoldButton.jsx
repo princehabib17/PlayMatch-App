@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { Text, TouchableOpacity, Animated, View } from "react-native";
 import { useTheme } from "@/utils/theme";
 
@@ -13,49 +13,55 @@ export default function GoldButton({
 }) {
   const theme = useTheme();
   const scaleValue = useRef(new Animated.Value(1)).current;
-  const shimmerValue = useRef(new Animated.Value(0)).current;
+  const glowPulse = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (!disabled && variant === "primary") {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(glowPulse, {
+            toValue: 1,
+            duration: 1500,
+            useNativeDriver: false,
+          }),
+          Animated.timing(glowPulse, {
+            toValue: 0,
+            duration: 1500,
+            useNativeDriver: false,
+          }),
+        ])
+      ).start();
+    }
+  }, [disabled, variant]);
 
   const handlePressIn = () => {
-    Animated.parallel([
-      Animated.timing(scaleValue, {
-        toValue: 0.97,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shimmerValue, {
-        toValue: 1,
-        duration: 120,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    Animated.spring(scaleValue, {
+      toValue: 0.96,
+      friction: 5,
+      useNativeDriver: true,
+    }).start();
   };
 
   const handlePressOut = () => {
-    Animated.parallel([
-      Animated.timing(scaleValue, {
-        toValue: 1,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shimmerValue, {
-        toValue: 0,
-        duration: 120,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    Animated.spring(scaleValue, {
+      toValue: 1,
+      friction: 3,
+      tension: 40,
+      useNativeDriver: true,
+    }).start();
   };
 
   const backgroundColor =
     variant === "primary" ? theme.colors.primary : "transparent";
 
   const borderColor =
-    variant === "outline" ? theme.colors.primary : "transparent";
+    variant === "outline" ? theme.colors.primary : theme.colors.border;
 
-  const textColor = variant === "primary" ? "#000000" : theme.colors.primary;
+  const textColor = variant === "primary" ? theme.colors.textBlack : theme.colors.primary;
 
-  const shimmerOpacity = shimmerValue.interpolate({
+  const glowIntensity = glowPulse.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 0.3],
+    outputRange: [0.4, 0.8],
   });
 
   return (
@@ -72,17 +78,18 @@ export default function GoldButton({
           {
             height: theme.components.buttonHeight,
             backgroundColor: disabled
-              ? theme.colors.textMuted
+              ? theme.colors.cardElevated
               : backgroundColor,
-            borderWidth: variant === "outline" ? 2 : 0,
-            borderColor: disabled ? theme.colors.textMuted : borderColor,
-            borderRadius: theme.radius.round,
+            borderWidth: variant === "outline" ? 2.5 : 0,
+            borderColor: disabled ? theme.colors.borderSubtle : borderColor,
+            borderRadius: theme.radius.md,
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "center",
             paddingHorizontal: theme.spacing.xl,
             position: "relative",
             overflow: "hidden",
+            ...(variant === "primary" && !disabled ? theme.shadows.glowStrong : {}),
           },
         ]}
         onPress={onPress}
@@ -92,24 +99,55 @@ export default function GoldButton({
         activeOpacity={1}
         {...props}
       >
-        {/* Shimmer overlay */}
-        <Animated.View
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "#FFFFFF",
-            opacity: shimmerOpacity,
-          }}
-        />
+        {/* Diagonal accent */}
+        {variant === "primary" && !disabled && (
+          <>
+            <View
+              style={{
+                position: "absolute",
+                width: 3,
+                height: "100%",
+                backgroundColor: theme.colors.textBlack,
+                left: 0,
+                opacity: 0.2,
+              }}
+            />
+            <View
+              style={{
+                position: "absolute",
+                width: 60,
+                height: 3,
+                backgroundColor: theme.colors.textBlack,
+                top: 0,
+                right: 20,
+                transform: [{ rotate: "-12deg" }],
+                opacity: 0.15,
+              }}
+            />
+          </>
+        )}
+
+        {/* Animated glow overlay for primary variant */}
+        {variant === "primary" && !disabled && (
+          <Animated.View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "#FFFFFF",
+              opacity: glowIntensity,
+              mixBlendMode: "overlay",
+            }}
+          />
+        )}
 
         {Icon && (
           <Icon
             size={theme.components.iconSize}
-            color={disabled ? theme.colors.background : textColor}
-            strokeWidth={2}
+            color={disabled ? theme.colors.textMuted : textColor}
+            strokeWidth={2.5}
             style={{ marginRight: title ? theme.spacing.sm : 0 }}
           />
         )}
@@ -117,15 +155,14 @@ export default function GoldButton({
         {title && (
           <Text
             style={[
-              theme.typography.body,
+              theme.typography.h4,
               {
-                fontFamily: "Figtree_700Bold",
-                color: disabled ? theme.colors.background : textColor,
-                letterSpacing: theme.typography.body.letterSpacing,
+                fontFamily: "Oswald_700Bold",
+                color: disabled ? theme.colors.textMuted : textColor,
               },
             ]}
           >
-            {title}
+            {title.toUpperCase()}
           </Text>
         )}
       </TouchableOpacity>
