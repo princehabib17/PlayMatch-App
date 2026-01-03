@@ -1,0 +1,15 @@
+{
+  "buildCommand": "cd apps/mobile && npm install && npx expo export -p web",
+  "outputDirectory": "apps/mobile/dist",
+  "installCommand": "npm install --prefix apps/mobile",
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "env": {
+    "EXPO_PUBLIC_API_BASE_URL": "https://play-match-app.vercel.app"
+  }
+}
