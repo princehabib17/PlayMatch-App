@@ -1,6 +1,6 @@
 {
-  "buildCommand": "cd apps/web && bun install && bun run build",
-  "outputDirectory": "apps/web/build/client",
-  "installCommand": "cd apps/web && bun install",
-  "devCommand": "cd apps/web && bun run dev"
+  "buildCommand": "cd apps/mobile && npm ci && npx expo export --platform web",
+  "outputDirectory": "apps/mobile/dist",
+  "installCommand": "npm ci --prefix apps/mobile",
+  "framework": null
 }
