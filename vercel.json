@@ -1,12 +1,15 @@
 {
-  "buildCommand": "cd apps/mobile && npm install && npx expo export -p web",
+  "buildCommand": "cd apps/mobile && npm install && npx expo export:web",
   "outputDirectory": "apps/mobile/dist",
-  "installCommand": "npm install --prefix apps/mobile",
+  "installCommand": "cd apps/mobile && npm install",
   "framework": null,
-  "rewrites": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ],
   "env": {
