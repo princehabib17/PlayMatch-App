@@ -21,7 +21,6 @@ import {
 } from 'react';
 import './global.css';
 
-import fetch from '@/__create/fetch';
 // @ts-ignore
 import { SessionProvider } from '@auth/create/react';
 import { useNavigate } from 'react-router';
@@ -36,8 +35,16 @@ import { useDevServerHeartbeat } from '../__create/useDevServerHeartbeat';
 
 export const links = () => [];
 
-if (globalThis.window && globalThis.window !== undefined) {
-  globalThis.window.fetch = fetch;
+// Only patch `window.fetch` in the browser. Avoid static-importing the fetch
+// polyfill into the SSR bundle (it can create circular SSR chunks).
+if (typeof window !== 'undefined') {
+  import('@/__create/fetch')
+    .then((m) => {
+      window.fetch = m.default;
+    })
+    .catch(() => {
+      // Best effort: don't block rendering if this fails.
+    });
 }
 
 function SharedErrorBoundary({
