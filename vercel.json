@@ -5,6 +5,6 @@
   "outputDirectory": "apps/web/build/client",
   "routes": [
     { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/api" }
+    { "src": "/(.*)", "dest": "/api/index.cjs" }
   ]
 }
