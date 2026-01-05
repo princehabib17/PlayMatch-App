@@ -7,7 +7,8 @@
   ],
   "scripts": {
     "dev": "npm --workspace web run dev",
-    "build": "npm --workspace web run build"
+    "build": "npm --workspace web run build",
+    "start": "npm --workspace web run start"
   },
   "engines": {
     "node": ">=20"
