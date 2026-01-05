@@ -1,0 +1,1 @@
+{"dependencies":[],"output":[{"data":{"code":"__d(function(g,r,i,a,m,e,d){Object.defineProperty(e,\"__esModule\",{value:!0}),e.fetch=void 0;e.fetch=globalThis.fetch});","lineCount":1,"map":[[1,92,1,18,"e"],[1,94,1,18,"fetch"],[1,100,1,21,"globalThis"],[1,111,1,32,"fetch"],[1,116,1,38],[1,119]],"functionMap":{"names":["<global>"],"mappings":"AAA"}},"type":"js/module"}]}
