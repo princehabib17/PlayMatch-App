@@ -1,9 +1,13 @@
 {
   "name": "playmatch",
   "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/web"
+  ],
   "scripts": {
-    "dev": "npm --prefix apps/web run dev",
-    "build": "npm --prefix apps/web run build"
+    "dev": "npm --workspace web run dev",
+    "build": "npm --workspace web run build"
   },
   "engines": {
     "node": ">=20"
