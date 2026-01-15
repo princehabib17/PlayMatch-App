@@ -1,4 +1,4 @@
-import sql from "@/app/api/utils/sql.js";
+import sql from "../../utils/sql.js";
 
 // GET /api/games/[id] - Get a single game with participants
 export async function GET(request, { params }) {
