@@ -16,6 +16,17 @@ import { restartEnvFileChange } from './plugins/restartEnvFileChange';
 export default defineConfig({
   // Keep them available via import.meta.env.NEXT_PUBLIC_*
   envPrefix: 'NEXT_PUBLIC_',
+  // React Router's server build currently uses top-level await in our server code;
+  // target ES2022+ so esbuild doesn't reject it.
+  esbuild: {
+    target: 'es2022',
+  },
+  build: {
+    target: 'es2022',
+  },
+  ssr: {
+    target: 'node22',
+  },
   optimizeDeps: {
     // Explicitly include fast-glob, since it gets dynamically imported and we
     // don't want that to cause a re-bundle.
