@@ -1,8 +1,5 @@
-import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import { useCallback, useEffect, useMemo } from 'react';
-import { create } from 'zustand';
-import { Modal, View } from 'react-native';
+import { useCallback, useEffect } from 'react';
 import { useAuthModal, useAuthStore, authKey } from './store';
 
 
@@ -24,8 +21,6 @@ export const useAuth = () => {
       });
     });
   }, []);
-
-  useEffect(() => {}, []);
 
   const signIn = useCallback(() => {
     open({ mode: 'signin' });
