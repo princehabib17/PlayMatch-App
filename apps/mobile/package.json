@@ -3,9 +3,6 @@
   "main": "index",
   "version": "1.0.0",
   "scripts": {
-		"build": "npx expo export -p web",
-		"start": "npx expo start",
-		"web": "npx expo start --web",
     "postinstall": "patch-package",
     "build": "npx expo export -p web",
     "start": "npx expo start",

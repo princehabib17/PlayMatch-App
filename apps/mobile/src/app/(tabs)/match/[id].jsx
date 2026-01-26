@@ -348,7 +348,7 @@ export default function MatchDetailsScreen() {
             }} />
             <MapPin
               size={16}
-              color: theme.colors.textSecondary}
+              color={theme.colors.textSecondary}
               strokeWidth={2.5}
             />
             <Text
