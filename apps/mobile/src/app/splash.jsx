@@ -236,7 +236,7 @@ export default function SplashScreen() {
 
       {/* Bottom Glow Effect */}
       <LinearGradient
-        colors={["transparent", theme.colors.glow]}
+        colors={["transparent", theme.colors.glowPrimary]}
         style={{
           position: "absolute",
           bottom: 0,
