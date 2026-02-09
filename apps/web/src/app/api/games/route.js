@@ -1,4 +1,4 @@
-import sql from "@/app/api/utils/sql.js";
+import sql from "../utils/sql.js";
 
 // GET /api/games - List games with optional filters
 export async function GET(request) {

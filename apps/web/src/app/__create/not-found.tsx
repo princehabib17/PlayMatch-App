@@ -3,19 +3,31 @@ import type { Route } from './+types/not-found';
 import { useNavigate } from 'react-router';
 import { useCallback, useEffect, useState } from 'react';
 
+export const prerender = false;
+
 export async function loader({ params }: Route.LoaderArgs) {
-  const matches = await fg('src/**/page.{js,jsx,ts,tsx}');
-  return {
-    path: `/${params['*']}`,
-    pages: matches
-      .sort((a, b) => a.length - b.length)
-      .map((match) => {
-        const url = match.replace('src/app', '').replace(/\/page\.(js|jsx|ts|tsx)$/, '') || '/';
-        const path = url.replaceAll('[', '').replaceAll(']', '');
-        const displayPath = path === '/' ? 'Homepage' : path;
-        return { url, path: displayPath };
-      }),
-  };
+  const missingPath = params['*'] ?? '';
+  try {
+    const matches = await fg('src/**/page.{js,jsx,ts,tsx}');
+    return {
+      path: `/${missingPath}`,
+      pages: matches
+        .sort((a, b) => a.length - b.length)
+        .map((match) => {
+          const url =
+            match.replace('src/app', '').replace(/\/page\.(js|jsx|ts|tsx)$/, '') || '/';
+          const path = url.replaceAll('[', '').replaceAll(']', '');
+          const displayPath = path === '/' ? 'Homepage' : path;
+          return { url, path: displayPath };
+        }),
+    };
+  } catch (error) {
+    console.error('Failed to build not-found route list:', error);
+    return {
+      path: `/${missingPath}`,
+      pages: [],
+    };
+  }
 }
 
 interface ParentSitemap {

@@ -202,6 +202,30 @@ if (process.env.AUTH_SECRET) {
             return null;
           },
         }),
+        Credentials({
+          id: 'guest',
+          name: 'Guest Sign in',
+          credentials: {},
+          authorize: async () => {
+            const guestId = crypto.randomUUID();
+            const guestEmail = `guest-${guestId}@example.com`;
+            const newUser = await adapter.createUser({
+              id: guestId,
+              emailVerified: null,
+              email: guestEmail,
+            });
+            await adapter.linkAccount({
+              extraData: {
+                password: null,
+              },
+              type: 'credentials',
+              userId: newUser.id,
+              providerAccountId: newUser.id,
+              provider: 'guest',
+            });
+            return newUser;
+          },
+        }),
       ],
     }))
   );
@@ -235,7 +259,7 @@ app.use('/api/auth/*', async (c, next) => {
 });
 app.route(API_BASENAME, api);
 
-export default await createHonoServer({
+export default createHonoServer({
   app,
   defaultLogger: false,
 });

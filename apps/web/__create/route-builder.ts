@@ -1,6 +1,5 @@
 import { readdir, stat } from 'node:fs/promises';
-import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join, sep } from 'node:path';
 import { Hono } from 'hono';
 import type { Handler } from 'hono/types';
 import updatedFetch from '../src/__create/fetch';
@@ -9,7 +8,7 @@ const API_BASENAME = '/api';
 const api = new Hono();
 
 // Get current directory
-const __dirname = join(fileURLToPath(new URL('.', import.meta.url)), '../src/app/api');
+const __dirname = join(process.cwd(), 'src/app/api');
 if (globalThis.fetch) {
   globalThis.fetch = updatedFetch;
 }
@@ -79,7 +78,13 @@ async function registerRoutes() {
   // Clear existing routes
   api.routes = [];
 
+  const includeCreateRoutes = import.meta.env.DEV;
+  const createSegment = `${sep}__create${sep}`;
+
   for (const routeFile of routeFiles) {
+    if (!includeCreateRoutes && routeFile.includes(createSegment)) {
+      continue;
+    }
     try {
       const route = await import(/* @vite-ignore */ `${routeFile}?update=${Date.now()}`);
 
@@ -132,7 +137,9 @@ async function registerRoutes() {
 }
 
 // Initial route registration
-await registerRoutes();
+void registerRoutes().catch((error) => {
+  console.error('Error registering routes:', error);
+});
 
 // Hot reload routes in development
 if (import.meta.env.DEV) {

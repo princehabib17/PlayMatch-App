@@ -1,4 +1,4 @@
-import sql from "@/app/api/utils/sql.js";
+import sql from "../../../utils/sql.js";
 
 // POST /api/games/[id]/join - Join a game
 export async function POST(request, { params }) {

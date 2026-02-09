@@ -32,6 +32,12 @@ function useAuth() {
   const signInWithTwitter = useCallback((options) => {
     return signIn("twitter", options);
   }, []);
+  const signInWithGuest = useCallback((options = {}) => {
+    return signIn("guest", {
+      ...options,
+      callbackUrl: callbackUrl ?? options.callbackUrl,
+    });
+  }, [callbackUrl]);
 
   return {
     signInWithCredentials,
@@ -39,6 +45,7 @@ function useAuth() {
     signInWithGoogle,
     signInWithFacebook,
     signInWithTwitter,
+    signInWithGuest,
     signOut,
   }
 }
