@@ -1,11 +1,23 @@
+import { getAuthenticatedUserId } from "../../utils/auth.js";
 import sql from "../../utils/sql.js";
+
+function parseRouteId(rawId) {
+  const gameId = Number.parseInt(rawId, 10);
+  if (!Number.isInteger(gameId) || gameId <= 0) {
+    return null;
+  }
+
+  return gameId;
+}
 
 // GET /api/games/[id] - Get a single game with participants
 export async function GET(request, { params }) {
   try {
-    const gameId = parseInt(params.id);
+    const gameId = parseRouteId(params.id);
+    if (!gameId) {
+      return Response.json({ error: "Invalid game id" }, { status: 400 });
+    }
 
-    // Get game details with venue and organizer info
     const [game] = await sql`
       SELECT 
         g.*,
@@ -27,7 +39,6 @@ export async function GET(request, { params }) {
       return Response.json({ error: "Game not found" }, { status: 404 });
     }
 
-    // Get participants with their team assignments
     const participants = await sql`
       SELECT 
         gp.*,
@@ -41,7 +52,6 @@ export async function GET(request, { params }) {
       ORDER BY gp.team, gp.joined_at
     `;
 
-    // Organize participants by teams
     const teamA = participants.filter((p) => p.team === "A");
     const teamB = participants.filter((p) => p.team === "B");
     const unassigned = participants.filter((p) => !p.team);
@@ -116,10 +126,32 @@ export async function GET(request, { params }) {
 // PUT /api/games/[id] - Update a game
 export async function PUT(request, { params }) {
   try {
-    const gameId = parseInt(params.id);
+    const userId = await getAuthenticatedUserId(request);
+    if (!userId) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const gameId = parseRouteId(params.id);
+    if (!gameId) {
+      return Response.json({ error: "Invalid game id" }, { status: 400 });
+    }
+
+    const [game] = await sql`
+      SELECT organizer_id
+      FROM games
+      WHERE id = ${gameId}
+    `;
+
+    if (!game) {
+      return Response.json({ error: "Game not found" }, { status: 404 });
+    }
+
+    if (game.organizer_id !== userId) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const updates = await request.json();
 
-    // Build dynamic update query
     const allowedFields = [
       "title",
       "venue_id",
@@ -154,8 +186,7 @@ export async function PUT(request, { params }) {
       );
     }
 
-    // Add updated_at timestamp
-    updateFields.push(`updated_at = CURRENT_TIMESTAMP`);
+    updateFields.push("updated_at = CURRENT_TIMESTAMP");
     values.push(gameId);
 
     const query = `
@@ -167,10 +198,6 @@ export async function PUT(request, { params }) {
 
     const [updatedGame] = await sql(query, values);
 
-    if (!updatedGame) {
-      return Response.json({ error: "Game not found" }, { status: 404 });
-    }
-
     return Response.json({ game: updatedGame });
   } catch (error) {
     console.error("Error updating game:", error);
@@ -181,9 +208,16 @@ export async function PUT(request, { params }) {
 // DELETE /api/games/[id] - Delete a game
 export async function DELETE(request, { params }) {
   try {
-    const gameId = parseInt(params.id);
+    const userId = await getAuthenticatedUserId(request);
+    if (!userId) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-    // Check if game exists and get organizer info
+    const gameId = parseRouteId(params.id);
+    if (!gameId) {
+      return Response.json({ error: "Invalid game id" }, { status: 400 });
+    }
+
     const [game] = await sql`
       SELECT organizer_id, status
       FROM games 
@@ -194,7 +228,10 @@ export async function DELETE(request, { params }) {
       return Response.json({ error: "Game not found" }, { status: 404 });
     }
 
-    // Only allow deletion if game hasn't started
+    if (game.organizer_id !== userId) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     if (game.status === "in_progress" || game.status === "completed") {
       return Response.json(
         { error: "Cannot delete a game that has started or completed" },
@@ -202,7 +239,6 @@ export async function DELETE(request, { params }) {
       );
     }
 
-    // Delete the game (this will cascade to participants due to foreign keys)
     await sql`
       DELETE FROM games 
       WHERE id = ${gameId}
