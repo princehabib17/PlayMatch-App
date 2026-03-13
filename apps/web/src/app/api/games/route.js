@@ -1,16 +1,34 @@
+import { getAuthenticatedUserId } from "../utils/auth.js";
 import sql from "../utils/sql.js";
+
+const DEFAULT_LIMIT = 20;
+const MAX_LIMIT = 100;
 
 // GET /api/games - List games with optional filters
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const limit = parseInt(searchParams.get("limit")) || 20;
-    const offset = parseInt(searchParams.get("offset")) || 0;
+
+    const rawLimit = Number.parseInt(searchParams.get("limit") ?? "", 10);
+    const rawOffset = Number.parseInt(searchParams.get("offset") ?? "", 10);
+    const limit = Number.isInteger(rawLimit)
+      ? Math.min(Math.max(rawLimit, 1), MAX_LIMIT)
+      : DEFAULT_LIMIT;
+    const offset = Number.isInteger(rawOffset) ? Math.max(rawOffset, 0) : 0;
+
     const skillLevel = searchParams.get("skillLevel");
-    const venueId = searchParams.get("venueId");
+    const venueIdParam = searchParams.get("venueId");
     const status = searchParams.get("status") || "open";
     const dateFrom = searchParams.get("dateFrom");
     const dateTo = searchParams.get("dateTo");
+
+    let venueId = null;
+    if (venueIdParam !== null) {
+      venueId = Number.parseInt(venueIdParam, 10);
+      if (!Number.isInteger(venueId) || venueId <= 0) {
+        return Response.json({ error: "Invalid venueId" }, { status: 400 });
+      }
+    }
 
     let query = `
       SELECT 
@@ -45,9 +63,9 @@ export async function GET(request) {
       paramIndex++;
     }
 
-    if (venueId) {
+    if (venueId !== null) {
       query += ` AND g.venue_id = $${paramIndex}`;
-      values.push(parseInt(venueId));
+      values.push(venueId);
       paramIndex++;
     }
 
@@ -73,7 +91,6 @@ export async function GET(request) {
 
     const games = await sql(query, values);
 
-    // Transform data to match frontend expectations
     const transformedGames = games.map((game) => ({
       id: game.id,
       title: game.title,
@@ -82,7 +99,7 @@ export async function GET(request) {
       dateTime: game.datetime_start,
       fee: parseFloat(game.fee_per_player),
       level: game.skill_level,
-      playersJoined: parseInt(game.players_joined),
+      playersJoined: parseInt(game.players_joined, 10),
       maxPlayers: game.max_players,
       status: game.status,
       description: game.description,
@@ -107,10 +124,14 @@ export async function GET(request) {
 // POST /api/games - Create a new game
 export async function POST(request) {
   try {
+    const userId = await getAuthenticatedUserId(request);
+    if (!userId) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const {
       title,
       venueId,
-      organizerId,
       datetimeStart,
       durationMinutes = 90,
       feePerPlayer = 0,
@@ -121,15 +142,18 @@ export async function POST(request) {
       rules,
     } = await request.json();
 
-    // Validate required fields
-    if (!venueId || !organizerId || !datetimeStart || !maxPlayers) {
+    if (!venueId || !datetimeStart || !maxPlayers) {
       return Response.json(
         {
-          error:
-            "Missing required fields: venueId, organizerId, datetimeStart, maxPlayers",
+          error: "Missing required fields: venueId, datetimeStart, maxPlayers",
         },
         { status: 400 },
       );
+    }
+
+    const parsedVenueId = Number.parseInt(String(venueId), 10);
+    if (!Number.isInteger(parsedVenueId) || parsedVenueId <= 0) {
+      return Response.json({ error: "Invalid venueId" }, { status: 400 });
     }
 
     const [game] = await sql`
@@ -137,7 +161,7 @@ export async function POST(request) {
         title, venue_id, organizer_id, datetime_start, duration_minutes,
         fee_per_player, max_players, skill_level, game_type, description, rules
       ) VALUES (
-        ${title}, ${venueId}, ${organizerId}, ${datetimeStart}, ${durationMinutes},
+        ${title}, ${parsedVenueId}, ${userId}, ${datetimeStart}, ${durationMinutes},
         ${feePerPlayer}, ${maxPlayers}, ${skillLevel}, ${gameType}, ${description}, ${rules}
       )
       RETURNING *
