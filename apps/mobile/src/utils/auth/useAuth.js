@@ -14,12 +14,30 @@ export const useAuth = () => {
   const { isOpen, close, open } = useAuthModal();
 
   const initiate = useCallback(() => {
-    SecureStore.getItemAsync(authKey).then((auth) => {
-      useAuthStore.setState({
-        auth: auth ? JSON.parse(auth) : null,
-        isReady: true,
+    SecureStore.getItemAsync(authKey)
+      .then((auth) => {
+        let parsedAuth = null;
+
+        if (auth) {
+          try {
+            parsedAuth = JSON.parse(auth);
+          } catch (error) {
+            console.error('Failed to parse stored auth state:', error);
+          }
+        }
+
+        useAuthStore.setState({
+          auth: parsedAuth,
+          isReady: true,
+        });
+      })
+      .catch((error) => {
+        console.error('Failed to restore auth state:', error);
+        useAuthStore.setState({
+          auth: null,
+          isReady: true,
+        });
       });
-    });
   }, []);
 
   const signIn = useCallback(() => {
