@@ -38,7 +38,7 @@ const queryClient = new QueryClient({
 
 export default function RootLayout() {
   const { initiate, isReady } = useAuth();
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     Oswald_400Regular,
     Oswald_500Medium,
     Oswald_600SemiBold,
@@ -58,12 +58,21 @@ export default function RootLayout() {
   }, [initiate]);
 
   useEffect(() => {
-    if (isReady && fontsLoaded) {
+    // Hide splash screen when ready OR if there was a font error (don't block forever)
+    if (isReady && (fontsLoaded || fontError)) {
       SplashScreen.hideAsync();
     }
-  }, [isReady, fontsLoaded]);
+  }, [isReady, fontsLoaded, fontError]);
 
-  if (!isReady || !fontsLoaded) {
+  // Log font errors for debugging
+  useEffect(() => {
+    if (fontError) {
+      console.warn('Font loading error:', fontError);
+    }
+  }, [fontError]);
+
+  // Don't block on font errors - let the app load with system fonts
+  if (!isReady || (!fontsLoaded && !fontError)) {
     return null;
   }
 
