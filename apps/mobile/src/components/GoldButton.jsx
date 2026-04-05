@@ -138,7 +138,6 @@ export default function GoldButton({
               bottom: 0,
               backgroundColor: "#FFFFFF",
               opacity: glowIntensity,
-              mixBlendMode: "overlay",
             }}
           />
         )}

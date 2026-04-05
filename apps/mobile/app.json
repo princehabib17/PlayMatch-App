@@ -1,6 +1,7 @@
 {
 	"expo": {
-    "name": "Create mobile app",
+		"name": "PlayMatch",
+		"slug": "playmatch",
 		"version": "1.0.0",
 		"orientation": "portrait",
 		"icon": "./assets/images/icon.png",
@@ -8,20 +9,32 @@
 		"newArchEnabled": true,
 		"ios": {
 			"supportsTablet": true,
+			"bundleIdentifier": "com.playmatch.app",
 			"infoPlist": {
-				"ITSAppUsesNonExemptEncryption": false
+				"ITSAppUsesNonExemptEncryption": false,
+				"NSCameraUsageDescription": "PlayMatch needs camera access to record your football highlights and take profile photos.",
+				"NSPhotoLibraryUsageDescription": "PlayMatch needs photo library access to upload your football highlights and profile photos.",
+				"NSMicrophoneUsageDescription": "PlayMatch needs microphone access to record audio for your football highlight videos.",
+				"NSLocationWhenInUseUsageDescription": "PlayMatch uses your location to find nearby football games and venues.",
+				"NSContactsUsageDescription": "PlayMatch can access your contacts to help you find friends who also play.",
+				"NSCalendarsUsageDescription": "PlayMatch can add your upcoming games to your calendar so you never miss a match."
 			}
 		},
 		"android": {
 			"adaptiveIcon": {
 				"foregroundImage": "./assets/images/adaptive-icon.png",
-				"backgroundColor": "#ffffff"
+				"backgroundColor": "#0A0A0A"
 			},
 			"permissions": [
 				"android.permission.RECORD_AUDIO",
-				"android.permission.MODIFY_AUDIO_SETTINGS"
+				"android.permission.MODIFY_AUDIO_SETTINGS",
+				"android.permission.CAMERA",
+				"android.permission.ACCESS_FINE_LOCATION",
+				"android.permission.READ_CONTACTS",
+				"android.permission.READ_CALENDAR",
+				"android.permission.WRITE_CALENDAR"
 			],
-			"package": "xyz.create.CreateExpoEnvironment"
+			"package": "com.playmatch.app"
 		},
 		"plugins": [
 			[
@@ -35,7 +48,8 @@
 				{
 					"image": "./assets/images/splash-icon.png",
 					"imageWidth": 200,
-					"resizeMode": "contain"
+					"resizeMode": "contain",
+					"backgroundColor": "#0A0A0A"
 				}
 			],
 			"expo-audio",
