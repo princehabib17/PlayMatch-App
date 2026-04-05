@@ -210,7 +210,7 @@ export default function MatchDetailsScreen() {
           backgroundColor: isEmpty
             ? isSelected
               ? theme.colors.primary
-              : theme.colors.elevated
+              : theme.colors.cardElevated
             : "transparent",
           borderWidth: isEmpty ? (isSelected ? 3 : 1) : 2,
           borderColor: isEmpty
@@ -591,7 +591,7 @@ export default function MatchDetailsScreen() {
                 style={{
                   marginTop: theme.spacing.lg,
                   padding: theme.spacing.md,
-                  backgroundColor: theme.colors.glow,
+                  backgroundColor: theme.colors.glowPrimary,
                   borderRadius: theme.radius.sm,
                   alignItems: "center",
                 }}
@@ -754,7 +754,7 @@ export default function MatchDetailsScreen() {
           <GoldButton
             title={selectedTeam ? "Secure Spot" : "Select Team to Join"}
             onPress={selectedTeam ? handleJoinGame : undefined}
-            disabled={!selectedTeam || joinGameMutation.isLoading}
+            disabled={!selectedTeam || joinGameMutation.isPending}
           />
         )}
       </View>

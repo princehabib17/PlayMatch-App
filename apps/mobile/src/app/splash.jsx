@@ -4,18 +4,11 @@ import { StatusBar } from "expo-status-bar";
 import { router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@/utils/theme";
-import { useFonts, Figtree_700Bold } from "@expo-google-fonts/figtree";
-import { Inter_500Medium, Inter_600SemiBold } from "@expo-google-fonts/inter";
 
 const { width, height } = Dimensions.get("window");
 
 export default function SplashScreen() {
   const theme = useTheme();
-  const [fontsLoaded] = useFonts({
-    Figtree_700Bold,
-    Inter_500Medium,
-    Inter_600SemiBold,
-  });
   const fadeAnimation = useRef(new Animated.Value(0)).current;
   const scaleAnimation = useRef(new Animated.Value(0.5)).current;
   const rotateAnimation = useRef(new Animated.Value(0)).current;

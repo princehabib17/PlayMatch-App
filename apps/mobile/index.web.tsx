@@ -6,6 +6,11 @@ import { LoadSkiaWeb } from '@shopify/react-native-skia/lib/module/web';
 import './__create/reset.css';
 import CreateApp from './App';
 
-LoadSkiaWeb().then(async () => {
-  renderRootComponent(CreateApp);
-});
+LoadSkiaWeb()
+  .then(async () => {
+    renderRootComponent(CreateApp);
+  })
+  .catch((err) => {
+    console.warn("Skia Web failed to load, rendering without it:", err);
+    renderRootComponent(CreateApp);
+  });

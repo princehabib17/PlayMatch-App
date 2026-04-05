@@ -62,9 +62,14 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     ) {
       return context.resolveRequest(context, moduleName, platform);
     }
-    // Wildcard alias for Expo Google Fonts
+    // Redirect uninstalled @expo-google-fonts/* packages to the dev package
+    // (loads fonts over the network). Installed packages use bundled .ttf files.
     if (moduleName.startsWith('@expo-google-fonts/') && moduleName !== '@expo-google-fonts/dev') {
-      return context.resolveRequest(context, '@expo-google-fonts/dev', platform);
+      try {
+        return context.resolveRequest(context, moduleName, platform);
+      } catch {
+        return context.resolveRequest(context, '@expo-google-fonts/dev', platform);
+      }
     }
     if (SHARED_ALIASES[moduleName] && !moduleName.startsWith('./polyfills/')) {
       return context.resolveRequest(context, SHARED_ALIASES[moduleName], platform);

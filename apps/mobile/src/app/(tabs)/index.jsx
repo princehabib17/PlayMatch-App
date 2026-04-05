@@ -348,7 +348,6 @@ function FeaturedCard({ item, index, scrollX }) {
               bottom: 0,
               backgroundColor: theme.colors.primary,
               opacity: glowOpacity,
-              mixBlendMode: "overlay",
             }}
           />
 
@@ -400,7 +399,7 @@ export default function HomeScreen() {
   const { data: featuredGameData } = useQuery({
     queryKey: ["games", "featured"],
     queryFn: async () => {
-      const response = await fetch(
+      const response = await apiFetch(
         "/api/games?limit=1&status=open&skillLevel=Advanced",
       );
       if (!response.ok) {

@@ -45,7 +45,7 @@ function AnimatedPlusButton() {
     ]).start();
 
     // Navigate to upload highlight
-    router.push("/upload-highlight");
+    router.push("/(tabs)/upload");
   };
 
   const glowOpacity = glowAnimation.interpolate({

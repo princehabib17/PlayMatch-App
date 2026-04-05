@@ -28,8 +28,8 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 30, // 30 minutes (formerly cacheTime)
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
       retry: 1,
       refetchOnWindowFocus: false,
     },
@@ -38,7 +38,7 @@ const queryClient = new QueryClient({
 
 export default function RootLayout() {
   const { initiate, isReady } = useAuth();
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     Oswald_400Regular,
     Oswald_500Medium,
     Oswald_600SemiBold,
@@ -58,12 +58,20 @@ export default function RootLayout() {
   }, [initiate]);
 
   useEffect(() => {
-    if (isReady && fontsLoaded) {
+    if (fontError) {
+      console.warn("Font loading failed, continuing without custom fonts:", fontError);
+    }
+  }, [fontError]);
+
+  const fontsReady = fontsLoaded || !!fontError;
+
+  useEffect(() => {
+    if (isReady && fontsReady) {
       SplashScreen.hideAsync();
     }
-  }, [isReady, fontsLoaded]);
+  }, [isReady, fontsReady]);
 
-  if (!isReady || !fontsLoaded) {
+  if (!isReady || !fontsReady) {
     return null;
   }
 

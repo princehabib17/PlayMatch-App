@@ -21,6 +21,8 @@ export async function GET(request) {
     const status = searchParams.get("status") || "open";
     const dateFrom = searchParams.get("dateFrom");
     const dateTo = searchParams.get("dateTo");
+    const search = searchParams.get("search");
+    const maxFeeParam = searchParams.get("maxFee");
 
     let venueId = null;
     if (venueIdParam !== null) {
@@ -67,6 +69,21 @@ export async function GET(request) {
       query += ` AND g.venue_id = $${paramIndex}`;
       values.push(venueId);
       paramIndex++;
+    }
+
+    if (search) {
+      query += ` AND (v.name ILIKE $${paramIndex} OR u.name ILIKE $${paramIndex} OR g.title ILIKE $${paramIndex})`;
+      values.push(`%${search}%`);
+      paramIndex++;
+    }
+
+    if (maxFeeParam !== null) {
+      const maxFee = parseFloat(maxFeeParam);
+      if (!isNaN(maxFee) && maxFee >= 0) {
+        query += ` AND g.fee_per_player <= $${paramIndex}`;
+        values.push(maxFee);
+        paramIndex++;
+      }
     }
 
     if (dateFrom) {
